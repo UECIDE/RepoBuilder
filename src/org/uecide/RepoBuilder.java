@@ -48,9 +48,6 @@ public class RepoBuilder extends JFrame implements MouseListener, TreeSelectionL
     File lastParent = null;
 
     public RepoBuilder(File f) {
-        if (f != null) {
-            doLoadRepo(f);
-        }
         setLayout(new BorderLayout());
 
         JMenuBar mainMenu = new JMenuBar();;
@@ -174,6 +171,11 @@ public class RepoBuilder extends JFrame implements MouseListener, TreeSelectionL
         });
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
+        setTitle("RepoBuilder");
+
+        if (f != null) {
+            doLoadRepo(f);
+        }
 
 
         setVisible(true);
@@ -238,17 +240,23 @@ public class RepoBuilder extends JFrame implements MouseListener, TreeSelectionL
 
     public void doLoadRepo(File f) {
         root = f;
-        System.err.println("Loading repo: " + f.getAbsolutePath());
         File debian = new File(f, "debian");
         if (!debian.exists()) {
+            JOptionPane.showMessageDialog(this, "That is not a package folder.\n('debian' does not exist)", "Not a package", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         File control = new File(debian, "control");
         if (!control.exists()) {
+            JOptionPane.showMessageDialog(this, "That is not a package folder.\n(No control file)", "Not a package", JOptionPane.ERROR_MESSAGE);
             return;
         }
         repo = new Repo(f, getFileAsString(control));
+        if (repo != null) {
+            rootNode.setUserObject(repo);
+            buildTree();
+            setTitle("RepoBuilder :: " + repo.toString());
+        }
     }
 
     public static File getConfigDir() {
@@ -332,14 +340,7 @@ public class RepoBuilder extends JFrame implements MouseListener, TreeSelectionL
     }
 
     public void generateTree() {
-        if (repo == null) {
-            rootNode = new DefaultMutableTreeNode("No Repo Loaded");
-            repoTree = new JTree(rootNode);
-            return;
-        }
-
-        rootNode = new DefaultMutableTreeNode("root");
-        rootNode.setUserObject(repo);
+        rootNode = new DefaultMutableTreeNode("No Repo Loaded");
         treeModel = new DefaultTreeModel(rootNode);
         repoTree = new JTree(treeModel);
 
@@ -356,7 +357,6 @@ public class RepoBuilder extends JFrame implements MouseListener, TreeSelectionL
         rootNode.add(compilersNode);
         rootNode.add(pluginsNode);
 
-        buildTree();
 
         repoTree.addMouseListener(this);
         repoTree.addTreeSelectionListener(this);
