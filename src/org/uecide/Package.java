@@ -150,6 +150,7 @@ public class Package {
         p.add(new JLabel("Not a valid object!"));
     }
 
+    @SuppressWarnings("unchecked")
     public void addOption(JPanel p, GridBagConstraints c, String label, final String entry, final Object[] options) {
         JLabel lab = new JLabel(label + ": ");
         final JComboBox data = new JComboBox(options);

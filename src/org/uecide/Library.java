@@ -32,6 +32,7 @@ class Library extends Package {
         return sb.toString();
     }
 
+    @SuppressWarnings("unchecked")
     public void populatePanel(final JPanel p) {
         p.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
